@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversión de Unidades Clínicas | Matemática Aplicada - UCCuyo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: {
+                            DEFAULT: '#436600',
+                            light: '#f1f6eb',
+                            dark: '#2c4400'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f7f9f6;
+            color: #1f2937;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tab-btn.active {
+            background-color: #436600;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(67, 102, 0, 0.2), 0 2px 4px -2px rgba(67, 102, 0, 0.2);
+        }
+        .tab-btn.active i {
+            color: #ffffff !important;
+        }
+        .tab-btn:not(.active):hover {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+        .interactive-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .step-node {
+            transition: all 0.25s ease;
+        }
+        .step-node.active-from {
+            background-color: #436600 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(67, 102, 0, 0.35);
+            transform: scale(1.08);
+        }
+        .step-node.active-to {
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+            transform: scale(1.08);
+        }
+        .step-node.active-between {
+            background-color: #f1f6eb !important;
+            border-color: #436600 !important;
+            color: #436600 !important;
+            font-weight: 600;
+        }
+        .mag-pill.active {
+            background-color: #436600;
+            color: #ffffff;
+            border-color: #436600;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-accent text-white flex items-center justify-center font-bold text-xl shadow-sm tracking-wider">
+                    MAT
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-900 leading-tight">MATEMÁTICA APLICADA EN SALUD</h1>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">CONVERSIÓN DE UNIDADES CLÍNICAS &bull; ENFERMERÍA UCCUYO</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button onclick="openModal('modal-formulas')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-xs font-bold transition shadow-sm">
+                    <i class="fa-solid fa-book-medical text-accent text-sm"></i>
+                    <span>Vademécum Conceptual</span>
+                </button>
+                <button onclick="openModal('modal-tutorial')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-accent bg-accent-light text-accent hover:bg-emerald-100 text-xs font-bold transition shadow-sm">
+                    <i class="fa-solid fa-circle-question text-accent text-sm"></i>
+                    <span>Guía de Uso</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+        <div class="flex flex-col lg:flex-row gap-6">
+
+            <!-- Sidebar Navigation -->
+            <nav id="navTabs" class="w-full lg:w-64 flex-shrink-0 flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 z-10 sticky top-[73px]">
+                <button onclick="switchTab('mod1')" id="tab-btn-mod1" class="tab-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all text-left whitespace-nowrap bg-gray-100 text-gray-700">
+                    <i class="fa-solid fa-scale-balanced text-accent text-sm w-4 text-center"></i>
+                    <span>1. Fundamentos & Masa</span>
+                </button>
+                <button onclick="switchTab('mod2')" id="tab-btn-mod2" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all text-left whitespace-nowrap bg-gray-100 text-gray-700">
+                    <i class="fa-solid fa-ruler-combined text-accent text-sm w-4 text-center"></i>
+                    <span>2. Longitud & Capacidad</span>
+                </button>
+                <button onclick="switchTab('mod3')" id="tab-btn-mod3" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all text-left whitespace-nowrap bg-gray-100 text-gray-700">
+                    <i class="fa-solid fa-cube text-accent text-sm w-4 text-center"></i>
+                    <span>3. Volumen & Puentes</span>
+                </button>
+                <button onclick="switchTab('mod4')" id="tab-btn-mod4" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all text-left whitespace-nowrap bg-gray-100 text-gray-700">
+                    <i class="fa-solid fa-calculator text-accent text-sm w-4 text-center"></i>
+                    <span>4. Escalera Interactiva</span>
+                </button>
+                <button onclick="switchTab('mod5')" id="tab-btn-mod5" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all text-left whitespace-nowrap bg-gray-100 text-gray-700">
+                    <i class="fa-solid fa-user-doctor text-accent text-sm w-4 text-center"></i>
+                    <span>5. Casos Clínicos de Guardia</span>
+                </button>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="flex-grow min-w-0">
+
+                <!-- MODALIDAD 1: FUNDAMENTOS Y UNIDADES DE MASA -->
+                <div id="module-mod1" class="tab-content block space-y-6">
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-accent-light text-accent text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">Módulo 1</span>
+                            <span class="text-xs text-gray-500 font-mono">Magnitud Fundamental: Masa</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Principio de Equivalencia y Escala Métrica de Masa</h2>
+                        <p class="text-xs text-gray-600">Comprender que convertir unidades no modifica la cantidad de materia administrada o pesada: la dosis real no cambia, solo su representación métrica.</p>
+                    </div>
+
+                    <!-- Principio de Equivalencia Métrica -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-accent"></i> Regla de Oro en Farmacología y Antropometría
+                        </h3>
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                            Convertir unidades significa expresar una misma medida con otro múltiplo o submúltiplo del Sistema Internacional (SI). Si un frasco contiene \(500\text{ mg}\) de antibiótico, contiene exactamente \(0,5\text{ g}\); no hay más ni menos principio activo. Un error de escala (por ejemplo, agregar o quitar un cero) representa una sobredosificación o infradosificación potencialmente letal.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                                <span class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Masa de Referencia</span>
+                                <div class="text-sm font-bold font-mono text-accent">\(1\text{ kg} = 1000\text{ g}\)</div>
+                                <span class="text-[10px] text-gray-500 block mt-1">Control ponderal neonatal</span>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                                <span class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Longitud de Referencia</span>
+                                <div class="text-sm font-bold font-mono text-blue-700">\(1\text{ m} = 100\text{ cm}\)</div>
+                                <span class="text-[10px] text-gray-500 block mt-1">Talla del paciente</span>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                                <span class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Capacidad de Referencia</span>
+                                <div class="text-sm font-bold font-mono text-purple-700">\(1\text{ L} = 1000\text{ ml}\)</div>
+                                <span class="text-[10px] text-gray-500 block mt-1">Sachet de hidratación parenteral</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Escala Métrica Decimal de Masa -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-stairs text-accent"></i> Escala Métrica Decimal del Gramo
+                                </h3>
+                                <p class="text-xs text-gray-500">Unidad base del SI: Kilogramo (\(\text{kg}\)) &bull; Escala clínica centrada en el gramo (\(\text{g}\))</p>
+                            </div>
+                            <span class="text-xs font-mono bg-accent-light text-accent px-2.5 py-1 rounded font-bold">Factor: 10 por escalón</span>
+                        </div>
+
+                        <!-- Fila de Unidades -->
+                        <div class="grid grid-cols-7 gap-1.5 text-center mb-4">
+                            <div class="p-2 rounded bg-gray-100 border border-gray-200 font-mono text-xs font-bold text-gray-800">kg<span class="block text-[9px] font-normal text-gray-500 font-sans">kilo</span></div>
+                            <div class="p-2 rounded bg-gray-50 border border-gray-200 font-mono text-xs font-bold text-gray-700">hg<span class="block text-[9px] font-normal text-gray-500 font-sans">hecto</span></div>
+                            <div class="p-2 rounded bg-gray-50 border border-gray-200 font-mono text-xs font-bold text-gray-700">dag<span class="block text-[9px] font-normal text-gray-500 font-sans">deca</span></div>
+                            <div class="p-2 rounded bg-accent-light border border-accent font-mono text-xs font-bold text-accent">g<span class="block text-[9px] font-bold text-accent font-sans">GRAMO</span></div>
+                            <div class="p-2 rounded bg-gray-50 border border-gray-200 font-mono text-xs font-bold text-gray-700">dg<span class="block text-[9px] font-normal text-gray-500 font-sans">deci</span></div>
+                            <div class="p-2 rounded bg-gray-50 border border-gray-200 font-mono text-xs font-bold text-gray-700">cg<span class="block text-[9px] font-normal text-gray-500 font-sans">centi</span></div>
+                            <div class="p-2 rounded bg-gray-100 border border-gray-200 font-mono text-xs font-bold text-gray-800">mg<span class="block text-[9px] font-normal text-gray-500 font-sans">mili</span></div>
+                        </div>
+
+                        <!-- Regla de Descenso y Ascenso -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900">
+                                <strong class="flex items-center gap-1.5 font-bold mb-1"><i class="fa-solid fa-arrow-down text-accent"></i> Bajar escalones: Multiplicar por 10 por escalón</strong>
+                                <p class="text-[11px] leading-relaxed">
+                                    De una unidad mayor a una menor, la cantidad se expresa con números mayores (se agregan ceros o se desplaza la coma a la derecha).
+                                </p>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900">
+                                <strong class="flex items-center gap-1.5 font-bold mb-1"><i class="fa-solid fa-arrow-up text-amber-700"></i> Subir escalones: Dividir por 10 por escalón</strong>
+                                <p class="text-[11px] leading-relaxed">
+                                    De una unidad menor a una mayor, la cantidad se expresa con números menores (se eliminan ceros o se desplaza la coma a la izquierda).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Casos Clínicos Guiados de Masa -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase text-accent font-mono">Caso Clínico 1 &bull; Descenso</span>
+                                <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600">Pediatría / Neonatología</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-gray-900 mb-1">Control ponderal de recién nacido (\(3,2\text{ kg}\) a \(\text{g}\))</h4>
+                            <p class="text-xs text-gray-600 mb-3">
+                                En la sala de neonatología se pesa a un recién nacido: registra \(3,2\text{ kg}\). Para calibrar la dosis medicamentosa pediátrica se requiere el peso exacto en gramos.
+                            </p>
+                            <div class="p-3 rounded-lg bg-gray-50 border border-gray-200 font-mono text-xs space-y-1">
+                                <div class="text-gray-500 text-[11px]">Paso a paso: kg &rarr; hg &rarr; dag &rarr; g (3 escalones abajo)</div>
+                                <div class="font-bold text-accent">\(3,2 \times 10^3 = 3,2 \times 1000 = 3200\text{ g}\)</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase text-blue-700 font-mono">Caso Clínico 2 &bull; Ascenso</span>
+                                <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600">Farmacología Clínica</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-gray-900 mb-1">Dosificación de ampolla (\(500\text{ mg}\) a \(\text{g}\))</h4>
+                            <p class="text-xs text-gray-600 mb-3">
+                                Una ampolla de cefalotina viene dosificada en \(500\text{ mg}\). Para consignar el balance total en el Kardex institucional se debe asentar en gramos.
+                            </p>
+                            <div class="p-3 rounded-lg bg-gray-50 border border-gray-200 font-mono text-xs space-y-1">
+                                <div class="text-gray-500 text-[11px]">Paso a paso: mg &rarr; cg &rarr; dg &rarr; g (3 escalones arriba)</div>
+                                <div class="font-bold text-blue-700">\(500 \div 10^3 = 500 \div 1000 = 0,5\text{ g}\)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODALIDAD 2: LONGITUD Y CAPACIDAD -->
+                <div id="module-mod2" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-accent-light text-accent text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">Módulo 2</span>
+                            <span class="text-xs text-gray-500 font-mono">Metrología Clínica</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Unidades de Longitud (Metro) y Capacidad (Litro)</h2>
+                        <p class="text-xs text-gray-600">Ambas magnitudes operan bajo el sistema decimal lineal (\(\times 10\) o \(\div 10\) por escalón). Clave para antropometría, traslados e hidratación parenteral.</p>
+                    </div>
+
+                    <!-- Longitud -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-ruler-horizontal text-accent"></i> 1. Unidades de Longitud: El Metro (\(\text{m}\))
+                        </h3>
+                        <p class="text-xs text-gray-600 mb-4">
+                            Escala: \(\text{km} \leftrightarrow \text{hm} \leftrightarrow \text{dam} \leftrightarrow \text{m} \leftrightarrow \text{dm} \leftrightarrow \text{cm} \leftrightarrow \text{mm}\).
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                                <span class="text-[10px] font-mono font-bold text-accent uppercase block mb-1">Caso Antropometría: Talla</span>
+                                <h4 class="text-xs font-bold text-gray-900 mb-1">Estatura de \(1,75\text{ m}\) a \(\text{cm}\)</h4>
+                                <p class="text-xs text-gray-600 mb-2">Se bajan 2 escalones (\(\text{m} \rightarrow \text{dm} \rightarrow \text{cm}\)): multiplicar por \(100\).</p>
+                                <div class="p-2 bg-white rounded border border-gray-200 font-mono text-xs font-bold text-gray-800">
+                                    \(1,75 \times 100 = 175\text{ cm}\)
+                                </div>
+                            </div>
+                            <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                                <span class="text-[10px] font-mono font-bold text-blue-700 uppercase block mb-1">Caso Emergencias: Traslado</span>
+                                <h4 class="text-xs font-bold text-gray-900 mb-1">Distancia en ambulancia de \(3500\text{ m}\) a \(\text{km}\)</h4>
+                                <p class="text-xs text-gray-600 mb-2">Se suben 3 escalones (\(\text{m} \rightarrow \text{dam} \rightarrow \text{hm} \rightarrow \text{km}\)): dividir por \(1000\).</p>
+                                <div class="p-2 bg-white rounded border border-gray-200 font-mono text-xs font-bold text-gray-800">
+                                    \(3500 \div 1000 = 3,5\text{ km}\)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Capacidad -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-bottle-droplet text-accent"></i> 2. Unidades de Capacidad: El Litro (\(\text{L}\))
+                        </h3>
+                        <p class="text-xs text-gray-600 mb-4">
+                            Escala: \(\text{kl} \leftrightarrow \text{hl} \leftrightarrow \text{dal} \leftrightarrow \text{L} \leftrightarrow \text{dl} \leftrightarrow \text{cl} \leftrightarrow \text{ml}\). Utilizada para volumen de líquidos contenidos en recipientes clínicos.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                                <span class="text-[10px] font-mono font-bold text-accent uppercase block mb-1">Caso Terapia de Infusión</span>
+                                <h4 class="text-xs font-bold text-gray-900 mb-1">Frasco parenteral de \(1,5\text{ L}\) a \(\text{ml}\)</h4>
+                                <p class="text-xs text-gray-600 mb-2">Se bajan 3 escalones (\(\text{L} \rightarrow \text{dl} \rightarrow \text{cl} \rightarrow \text{ml}\)): multiplicar por \(1000\).</p>
+                                <div class="p-2 bg-white rounded border border-gray-200 font-mono text-xs font-bold text-gray-800">
+                                    \(1,5 \times 1000 = 1500\text{ ml}\)
+                                </div>
+                            </div>
+                            <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                                <span class="text-[10px] font-mono font-bold text-blue-700 uppercase block mb-1">Caso Balance Hídrico</span>
+                                <h4 class="text-xs font-bold text-gray-900 mb-1">Drenaje recolectado de \(750\text{ ml}\) a \(\text{L}\)</h4>
+                                <p class="text-xs text-gray-600 mb-2">Se suben 3 escalones (\(\text{ml} \rightarrow \text{cl} \rightarrow \text{dl} \rightarrow \text{L}\)): dividir por \(1000\).</p>
+                                <div class="p-2 bg-white rounded border border-gray-200 font-mono text-xs font-bold text-gray-800">
+                                    \(750 \div 1000 = 0,75\text{ L}\)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODALIDAD 3: VOLUMEN Y PUENTES CON CAPACIDAD -->
+                <div id="module-mod3" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-accent-light text-accent text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">Módulo 3</span>
+                            <span class="text-xs text-gray-500 font-mono">Espacio Tridimensional</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Unidades de Volumen Cúbico y Puentes de Equivalencia Directa</h2>
+                        <p class="text-xs text-gray-600">Al trabajar en tres dimensiones (\(\text{largo} \times \text{ancho} \times \text{alto}\)), cada escalón equivale a un factor de \(1000\) (\(10^3\)). Conectamos capacidad y volumen a través de 3 puentes cardinales.</p>
+                    </div>
+
+                    <!-- Los 3 Puentes Cardinales -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-bridge text-accent"></i> Los Tres Puentes de Equivalencia Directa (Capacidad &harr; Volumen)
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                            <div class="p-4 rounded-xl border border-gray-200 bg-gray-50 text-center">
+                                <i class="fa-solid fa-water text-accent text-2xl mb-1.5"></i>
+                                <span class="text-[10px] font-bold uppercase text-gray-500 block">Nivel Macro / Tanque</span>
+                                <div class="text-base font-bold font-mono text-gray-900 mt-1">\(1\text{ kl} = 1\text{ m}^3\)</div>
+                                <p class="text-[11px] text-gray-600 mt-1">\(1000\text{ litros}\) ocupan un cubo de \(1\text{ m}\) de arista.</p>
+                            </div>
+
+                            <div class="p-4 rounded-xl border-2 border-accent bg-accent-light text-center">
+                                <i class="fa-solid fa-box text-accent text-2xl mb-1.5"></i>
+                                <span class="text-[10px] font-bold uppercase text-accent block">Puente Estándar Clínico</span>
+                                <div class="text-lg font-bold font-mono text-gray-900 mt-1">\(1\text{ L} = 1\text{ dm}^3\)</div>
+                                <p class="text-[11px] text-gray-700 mt-1 font-medium">Equivalencia madre entre el litro y el decímetro cúbico.</p>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-gray-200 bg-gray-50 text-center">
+                                <i class="fa-solid fa-syringe text-accent text-2xl mb-1.5"></i>
+                                <span class="text-[10px] font-bold uppercase text-gray-500 block">Jeringas y Ampollas</span>
+                                <div class="text-base font-bold font-mono text-gray-900 mt-1">\(1\text{ ml} = 1\text{ cm}^3\)</div>
+                                <p class="text-[11px] text-gray-600 mt-1">El centímetro cúbico (\(\text{cc}\)) equivale exactamente a \(1\text{ ml}\).</p>
+                            </div>
+                        </div>
+
+                        <!-- Caso Práctico Guiado de Pasaje Mixto -->
+                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+                            <h4 class="text-xs font-bold text-gray-900 uppercase mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-calculator text-accent"></i> Caso Práctico Guiado: Convertir \(2,5\text{ L}\) a \(\text{cm}^3\)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div class="p-3 bg-white rounded-lg border border-gray-200">
+                                    <strong class="text-accent block mb-1">Paso 1: Cruzar el puente directo Capacidad &rarr; Volumen</strong>
+                                    <p class="text-gray-600 mb-1">Usamos \(1\text{ L} = 1\text{ dm}^3\):</p>
+                                    <div class="p-1.5 rounded bg-gray-50 font-mono font-bold text-gray-800 text-center">
+                                        \(2,5\text{ L} = 2,5\text{ dm}^3\)
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-white rounded-lg border border-gray-200">
+                                    <strong class="text-blue-700 block mb-1">Paso 2: Conversión cúbica de \(\text{dm}^3\) a \(\text{cm}^3\)</strong>
+                                    <p class="text-gray-600 mb-1">Descendemos 1 escalón en escala cúbica (\(\times 1000\)):</p>
+                                    <div class="p-1.5 rounded bg-gray-50 font-mono font-bold text-gray-800 text-center">
+                                        \(2,5 \times 1000 = 2500\text{ cm}^3\)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODALIDAD 4: ESCALERA INTERACTIVA (LABORATORIO) -->
+                <div id="module-mod4" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-accent-light text-accent text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">Módulo 4</span>
+                            <span class="text-xs text-gray-500 font-mono">Herramienta Didáctica</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Simulador Visual de la Escalera de Conversión</h2>
+                        <p class="text-xs text-gray-600">Interactuá seleccionando la magnitud, las unidades y la cantidad. Observá el salto en la escalera, el factor matemático y el desplazamiento decimal en tiempo real.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <!-- Selector de Magnitud -->
+                        <div class="flex flex-wrap gap-2 mb-5">
+                            <button onclick="setLabMagnitude('masa')" id="mag-btn-masa" class="mag-pill active px-3.5 py-1.5 rounded-lg border border-accent text-xs font-semibold">Masa (g)</button>
+                            <button onclick="setLabMagnitude('longitud')" id="mag-btn-longitud" class="mag-pill px-3.5 py-1.5 rounded-lg border border-gray-200 hover:border-gray-300 bg-white text-gray-700 text-xs font-semibold">Longitud (m)</button>
+                            <button onclick="setLabMagnitude('capacidad')" id="mag-btn-capacidad" class="mag-pill px-3.5 py-1.5 rounded-lg border border-gray-200 hover:border-gray-300 bg-white text-gray-700 text-xs font-semibold">Capacidad (L)</button>
+                            <button onclick="setLabMagnitude('volumen')" id="mag-btn-volumen" class="mag-pill px-3.5 py-1.5 rounded-lg border border-gray-200 hover:border-gray-300 bg-white text-gray-700 text-xs font-semibold">Volumen (m³)</button>
+                        </div>
+
+                        <!-- Controles de Entrada -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-gray-500 mb-1">Cantidad a convertir</label>
+                                <div class="relative">
+                                    <input type="number" step="any" id="lab-input-value" value="3.2" oninput="recalcLab()" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent font-mono text-gray-900">
+                                    <button onclick="document.getElementById('lab-input-value').value='1'; recalcLab();" class="absolute right-1.5 top-1.5 text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded">Reset 1</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-gray-500 mb-1">Unidad Origen (Desde)</label>
+                                <select id="lab-select-from" onchange="recalcLab()" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-accent font-mono"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-gray-500 mb-1">Unidad Destino (Hacia)</label>
+                                <select id="lab-select-to" onchange="recalcLab()" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-accent font-mono"></select>
+                            </div>
+                        </div>
+
+                        <!-- Diagrama de Escalones -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-600 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-stairs text-accent"></i> Escalones Métricos
+                                </span>
+                                <span id="lab-scale-factor-text" class="text-xs font-semibold font-mono bg-accent-light text-accent px-2 py-0.5 rounded">Factor por escalón: 10</span>
+                            </div>
+
+                            <div id="lab-stairs-container" class="flex flex-wrap items-center justify-center gap-2 py-2">
+                                <!-- Inyectado dinámicamente -->
+                            </div>
+
+                            <div id="lab-direction-indicator" class="mt-3 text-center text-xs font-semibold text-gray-700 bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
+                                Seleccioná unidades para visualizar el salto.
+                            </div>
+                        </div>
+
+                        <!-- Desglose Matemático Paso a Paso -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200">
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Operación Aritmética</span>
+                                <div id="lab-op-display" class="font-mono text-xs font-bold text-gray-900 mb-1">--</div>
+                                <p id="lab-op-subtext" class="text-[11px] text-gray-500">Dirección y factor aplicado</p>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200">
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Regla Decimal / Coma</span>
+                                <div id="lab-comma-display" class="font-mono text-xs font-bold text-purple-700 mb-1">--</div>
+                                <p id="lab-comma-subtext" class="text-[11px] text-gray-500">Desplazamiento posicional</p>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-accent-light border border-accent">
+                                <span class="text-[10px] font-bold text-accent uppercase block mb-1">Resultado Equivalente</span>
+                                <div id="lab-result-display" class="font-mono text-base font-bold text-accent mb-0.5">--</div>
+                                <span id="lab-result-unit" class="text-[10px] text-gray-600 font-medium">Equivalencia clínica exacta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODALIDAD 5: CASOS CLÍNICOS DE GUARDIA Y DOSIFICACIÓN -->
+                <div id="module-mod5" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-accent-light text-accent text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">Módulo 5</span>
+                            <span class="text-xs text-gray-500 font-mono">Resolución Clínica</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Estación Práctica: Cálculos de Guardia y Dosificación</h2>
+                        <p class="text-xs text-gray-600">Ejercitación interactiva sin presiones punitivas ni puntajes: explorá situaciones hospitalarias reales con fundamentación clínica inmediata paso a paso.</p>
+                    </div>
+
+                    <!-- Selector de Caso Clínico -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                        <button onclick="selectClinicalCase(0)" id="case-btn-0" class="p-3 text-left rounded-xl border-2 border-accent bg-accent-light text-xs font-bold text-gray-900 transition">
+                            <i class="fa-solid fa-baby text-accent mr-1"></i> 1. Guardia Neonatal (Masa)
+                        </button>
+                        <button onclick="selectClinicalCase(1)" id="case-btn-1" class="p-3 text-left rounded-xl border border-gray-200 bg-white hover:border-gray-300 text-xs font-bold text-gray-900 transition">
+                            <i class="fa-solid fa-faucet-drip text-blue-600 mr-1"></i> 2. Balance Hídrico (Capacidad)
+                        </button>
+                        <button onclick="selectClinicalCase(2)" id="case-btn-2" class="p-3 text-left rounded-xl border border-gray-200 bg-white hover:border-gray-300 text-xs font-bold text-gray-900 transition">
+                            <i class="fa-solid fa-syringe text-purple-600 mr-1"></i> 3. Shock Room (Puente Capacidad &harr; Volumen)
+                        </button>
+                    </div>
+
+                    <!-- Ficha del Caso Clínico Seleccionado -->
+                    <div id="clinical-case-container" class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-4">
+                        <!-- Inyectado dinámicamente -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-3 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-xs text-gray-500 font-medium">Desarrollado por vesalio - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Toast de Notificaciones -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-gray-900 text-white px-4 py-2.5 rounded-lg text-xs font-medium shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-msg">Mensaje del sistema</span>
+    </div>
+
+    <!-- MODAL: VADEMÉCUM CONCEPTUAL -->
+    <div id="modal-formulas" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-gray-200 animate-fadeIn">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-accent-light text-accent flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-book-medical"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-900">Vademécum Conceptual de Matemática en Salud</h3>
+                        <p class="text-[11px] text-gray-500 font-mono">Reglas Métricas, Factores y Puentes de Equivalencia</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-formulas')" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar space-y-4 text-xs text-gray-700">
+                <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200">
+                    <h4 class="font-bold text-accent text-xs mb-1">1. Regla del Escalón Decimal (Masa, Longitud, Capacidad)</h4>
+                    <p class="mb-2">Por cada escalón de desplazamiento en magnitudes lineales de una dimensión:</p>
+                    <div class="p-2 bg-white rounded border border-gray-200 font-mono text-center text-xs">
+                        $$\text{Descenso: } \times 10^n \quad \Big| \quad \text{Ascenso: } \div 10^n \quad (n = \text{número de escalones})$$
+                    </div>
+                </div>
+                <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200">
+                    <h4 class="font-bold text-accent text-xs mb-1">2. Escala Cúbica del Volumen Tridimensional</h4>
+                    <p class="mb-2">Al tratarse de tres dimensiones, cada escalón multiplica o divide por \(1000\) (\(10^3\)):</p>
+                    <div class="p-2 bg-white rounded border border-gray-200 font-mono text-center text-xs">
+                        $$\text{Descenso: } \times 1000 \quad \Big| \quad \text{Ascenso: } \div 1000$$
+                    </div>
+                </div>
+                <div class="p-3.5 rounded-lg bg-gray-50 border border-gray-200">
+                    <h4 class="font-bold text-accent text-xs mb-1">3. Puentes Cardinales Capacidad &harr; Volumen</h4>
+                    <p class="mb-2">Conexiones directas que no requieren operaciones intermedias:</p>
+                    <div class="p-2 bg-white rounded border border-gray-200 font-mono text-center text-xs space-y-1">
+                        <div>$$1\text{ kl} = 1\text{ m}^3$$</div>
+                        <div>$$1\text{ L} = 1\text{ dm}^3$$</div>
+                        <div>$$1\text{ ml} = 1\text{ cm}^3 \quad (\text{o } 1\text{ cc})$$</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end">
+                <button onclick="closeModal('modal-formulas')" class="px-4 py-2 bg-accent text-white text-xs font-bold rounded-lg hover:bg-emerald-800 transition">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GUÍA DE USO -->
+    <div id="modal-tutorial" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-gray-200 animate-fadeIn">
+            <div class="bg-accent p-4 text-white flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-circle-question text-xl"></i>
+                    <div>
+                        <h3 class="text-sm font-bold leading-tight">Guía de Uso del Simulador | Matemática en Salud</h3>
+                        <p class="text-[11px] text-emerald-100 font-mono">Curso de Ingreso a la Licenciatura en Enfermería &bull; FCM UCCuyo</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-tutorial')" class="text-white hover:text-gray-200 p-1 rounded-lg transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-5 text-xs text-gray-700 leading-relaxed">
+                <!-- Propósito -->
+                <div class="border-b border-gray-100 pb-3">
+                    <h4 class="font-bold text-accent text-sm mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye"></i> 1. Propósito Tecnopedagógico
+                    </h4>
+                    <p class="text-gray-600">
+                        Este simulador interactivo está diseñado para afianzar el dominio de la conversión de unidades métricas en la práctica clínica de enfermería. Su enfoque es <strong>estrictamente formativo y no punitivo</strong>: elimina la memorización mecánica y permite comprender el fundamento matemático detrás de cada dosificación, antropometría y balance hídrico.
+                    </p>
+                </div>
+
+                <!-- Recorrido Módulos -->
+                <div class="border-b border-gray-100 pb-3">
+                    <h4 class="font-bold text-accent text-sm mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group"></i> 2. Guía de Módulos y Herramientas
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <strong class="text-accent flex items-center gap-1.5 mb-1 text-xs">
+                                <i class="fa-solid fa-scale-balanced"></i> Módulo 1: Fundamentos & Masa
+                            </strong>
+                            <p class="text-gray-600">
+                                Aprende el principio de equivalencia (la masa real no cambia, solo su expresión métrica), la escala decimal del gramo (\(\text{kg}\) a \(\text{mg}\)) y los casos guiados de peso neonatal y dosificación de ampollas.
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <strong class="text-accent flex items-center gap-1.5 mb-1 text-xs">
+                                <i class="fa-solid fa-ruler-combined"></i> Módulo 2: Longitud & Capacidad
+                            </strong>
+                            <p class="text-gray-600">
+                                Explora la escala del metro para tallas antropométricas y traslados de urgencia, y la escala del litro para sachets de suero e infusión y registro de drenajes.
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <strong class="text-accent flex items-center gap-1.5 mb-1 text-xs">
+                                <i class="fa-solid fa-cube"></i> Módulo 3: Volumen & Puentes de Equivalencia
+                            </strong>
+                            <p class="text-gray-600">
+                                Comprende por qué en volumen cúbico cada escalón multiplica o divide por \(1000\), y domina los 3 puentes directos: \(1\text{ kl} = 1\text{ m}^3\), \(1\text{ L} = 1\text{ dm}^3\) y \(1\text{ ml} = 1\text{ cm}^3\).
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <strong class="text-accent flex items-center gap-1.5 mb-1 text-xs">
+                                <i class="fa-solid fa-calculator"></i> Módulo 4: Escalera Interactiva (Laboratorio)
+                            </strong>
+                            <p class="text-gray-600">
+                                Configura libremente la magnitud, los valores y las unidades. Visualiza en vivo qué escalones se iluminan, qué operación se aplica y cuántos lugares se corre la coma.
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <strong class="text-accent flex items-center gap-1.5 mb-1 text-xs">
+                                <i class="fa-solid fa-user-doctor"></i> Módulo 5: Casos Clínicos de Guardia
+                            </strong>
+                            <p class="text-gray-600">
+                                Resuelve situaciones reales de prescripción pediátrica, balance hidroelectrolítico de guardia y cubicación de frascos con retroalimentación explicativa inmediata.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consejos -->
+                <div>
+                    <h4 class="font-bold text-accent text-sm mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i> 3. Consejos de Estudio
+                    </h4>
+                    <p class="text-gray-600">
+                        Ten a mano el <strong>Vademécum Conceptual</strong> en la barra superior para verificar rápidamente las fórmulas y puentes en notación KaTeX antes de resolver cualquier cálculo de medicación.
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end">
+                <button onclick="closeModal('modal-tutorial')" class="px-4 py-2 bg-accent text-white text-xs font-bold rounded-lg hover:bg-emerald-800 transition">Comenzar Exploración</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Integrado -->
+    <script>
+        // ESCALAS DE MAGNITUDES
+        const scalesData = {
+            masa: {
+                name: "Masa",
+                factor: 10,
+                unitSymbol: "g",
+                units: [
+                    { key: 'kg', label: 'Kilogramo (kg)', power: 3 },
+                    { key: 'hg', label: 'Hectogramo (hg)', power: 2 },
+                    { key: 'dag', label: 'Decagramo (dag)', power: 1 },
+                    { key: 'g', label: 'Gramo (g)', power: 0 },
+                    { key: 'dg', label: 'Decigramo (dg)', power: -1 },
+                    { key: 'cg', label: 'Centigramo (cg)', power: -2 },
+                    { key: 'mg', label: 'Miligramo (mg)', power: -3 }
+                ]
+            },
+            longitud: {
+                name: "Longitud",
+                factor: 10,
+                unitSymbol: "m",
+                units: [
+                    { key: 'km', label: 'Kilómetro (km)', power: 3 },
+                    { key: 'hm', label: 'Hectómetro (hm)', power: 2 },
+                    { key: 'dam', label: 'Decámetro (dam)', power: 1 },
+                    { key: 'm', label: 'Metro (m)', power: 0 },
+                    { key: 'dm', label: 'Decímetro (dm)', power: -1 },
+                    { key: 'cm', label: 'Centímetro (cm)', power: -2 },
+                    { key: 'mm', label: 'Milímetro (mm)', power: -3 }
+                ]
+            },
+            capacidad: {
+                name: "Capacidad",
+                factor: 10,
+                unitSymbol: "L",
+                units: [
+                    { key: 'kl', label: 'Kilolitro (kl)', power: 3 },
+                    { key: 'hl', label: 'Hectolitro (hl)', power: 2 },
+                    { key: 'dal', label: 'Decalitro (dal)', power: 1 },
+                    { key: 'L', label: 'Litro (L)', power: 0 },
+                    { key: 'dl', label: 'Decilitro (dl)', power: -1 },
+                    { key: 'cl', label: 'Centilitro (cl)', power: -2 },
+                    { key: 'ml', label: 'Mililitro (ml)', power: -3 }
+                ]
+            },
+            volumen: {
+                name: "Volumen",
+                factor: 1000,
+                unitSymbol: "m³",
+                units: [
+                    { key: 'km3', label: 'Kilómetro cúbico (km³)', power: 9 },
+                    { key: 'hm3', label: 'Hectómetro cúbico (hm³)', power: 6 },
+                    { key: 'dam3', label: 'Decámetro cúbico (dam³)', power: 3 },
+                    { key: 'm3', label: 'Metro cúbico (m³)', power: 0 },
+                    { key: 'dm3', label: 'Decímetro cúbico (dm³)', power: -3 },
+                    { key: 'cm3', label: 'Centímetro cúbico (cm³)', power: -6 },
+                    { key: 'mm3', label: 'Milímetro cúbico (mm³)', power: -9 }
+                ]
+            }
+        };
+
+        let currentLabMagnitude = 'masa';
+
+        // CASOS CLÍNICOS FORMATIVOS DE GUARDIA
+        const clinicalCasesData = [
+            {
+                title: "Guardia Neonatal: Peso y Dosificación Milimétrica",
+                context: "En la incubadora 4, un neonato prematuro pesó 1.850 g al ingreso. El médico indica una dosis de ampicilina de 25 mg por cada kilogramo de peso del paciente.",
+                question: "¿Cuál es el peso del recién nacido expresado en kilogramos (kg) para calibrar la prescripción?",
+                options: [
+                    { text: "1,85 kg (se suben 3 escalones de g a kg, dividiendo por 1000)", correct: true, feedback: "¡Exacto! Al subir de gramos a kilogramos se divide por 1000 (1850 / 1000 = 1,85 kg). Multiplicado por 25 mg/kg, la dosis calculada es 46,25 mg de ampicilina." },
+                    { text: "18,5 kg (se divide por 100)", correct: false, feedback: "Incorrecto: entre gramos y kilogramos hay 3 escalones (g -> dag -> hg -> kg), por lo que se debe dividir por 1000, no por 100." },
+                    { text: "0,185 kg (se divide por 10.000)", correct: false, feedback: "Incorrecto: dividir por 10.000 representaría 4 escalones decimales. Corresponde dividir por 1000." },
+                    { text: "185 kg (se multiplica por 10)", correct: false, feedback: "Incorrecto: al subir a una unidad mayor se divide, jamás se multiplica." }
+                ]
+            },
+            {
+                title: "Balance Hídrico Estricto en Terapia Intensiva",
+                context: "Al culminar el turno de 8 horas en UTI, el reporte registra un débito por sonda vesical de 0,85 L y un drenaje pleural aspirativo de 150 ml.",
+                question: "¿Cuál es el volumen total acumulado de egresos expresado en mililitros (ml)?",
+                options: [
+                    { text: "1000 ml (0,85 L = 850 ml, y 850 + 150 = 1000 ml)", correct: true, feedback: "¡Correcto! Primero homogeneizamos: 0,85 L multiplicados por 1000 son 850 ml. Sumamos los 150 ml pleurales y obtenemos exactamente 1000 ml (1 L)." },
+                    { text: "235 ml (0,85 L = 85 ml, y 85 + 150 = 235 ml)", correct: false, feedback: "Incorrecto: para pasar de litros a mililitros se bajan 3 escalones (multiplicar por 1000), no por 100." },
+                    { text: "100 ml (restando ambos débitos)", correct: false, feedback: "Incorrecto: ambos drenajes son egresos biológicos; deben sumarse para el balance de fluidos, no restarse." },
+                    { text: "8.650 ml (multiplicando erróneamente)", correct: false, feedback: "Incorrecto: error de cálculo posicional en el desplazamiento de la coma." }
+                ]
+            },
+            {
+                title: "Shock Room: Preparación de Frascos de Infusión",
+                context: "En la atención de un paciente politraumatizado se preparan 2 frascos de solución Ringer Lactato de 500 ml cada uno. La indicación solicita verificar el volumen en centímetros cúbicos (cm³).",
+                question: "¿Cuál es el volumen total equivalente en centímetros cúbicos (cm³)?",
+                options: [
+                    { text: "1000 cm³ (500 ml + 500 ml = 1000 ml, y por puente directo 1 ml = 1 cm³)", correct: true, feedback: "¡Excelente! El volumen total es de 1000 ml. Por el puente directo de equivalencia capacidad-volumen (1 ml = 1 cm³), 1000 ml equivalen exactamente a 1000 cm³ (o 1 dm³ / 1 L)." },
+                    { text: "100 cm³ (dividiendo por 10)", correct: false, feedback: "Incorrecto: 1 ml equivale exactamente a 1 cm³; no se divide por ningún factor." },
+                    { text: "10.000 cm³ (multiplicando por 10)", correct: false, feedback: "Incorrecto: no hay que multiplicar; el mililitro y el centímetro cúbico son magnitudes equivalentes 1 a 1." },
+                    { text: "1 cm³ (dividiendo por 1000)", correct: false, feedback: "Incorrecto: 1 cm³ es apenas 1 ml, insuficiente para una reposición parenteral de dos frascos." }
+                ]
+            }
+        ];
+
+        let selectedCaseIdx = 0;
+
+        // PESTAÑAS (TABS)
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('block');
+            });
+            const activeContent = document.getElementById('module-' + tabId);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+                activeContent.classList.add('block');
+            }
+
+            if (tabId === 'mod4') {
+                recalcLab();
+            }
+
+            renderMath();
+        }
+
+        // LABORATORIO INTERACTIVO (ESCALERA)
+        function setLabMagnitude(magKey) {
+            currentLabMagnitude = magKey;
+            ['masa', 'longitud', 'capacidad', 'volumen'].forEach(k => {
+                const b = document.getElementById(`mag-btn-${k}`);
+                if (k === magKey) {
+                    b.className = "mag-pill active px-3.5 py-1.5 rounded-lg border border-accent text-xs font-semibold";
+                } else {
+                    b.className = "mag-pill px-3.5 py-1.5 rounded-lg border border-gray-200 hover:border-gray-300 bg-white text-gray-700 text-xs font-semibold";
+                }
+            });
+
+            initLabSelectors();
+            recalcLab();
+        }
+
+        function initLabSelectors() {
+            const mag = scalesData[currentLabMagnitude];
+            const selFrom = document.getElementById('lab-select-from');
+            const selTo = document.getElementById('lab-select-to');
+
+            selFrom.innerHTML = mag.units.map((u, i) => `<option value="${u.key}" ${i === 0 ? 'selected' : ''}>${u.label}</option>`).join('');
+            selTo.innerHTML = mag.units.map((u, i) => `<option value="${u.key}" ${i === (mag.units.length - 1) ? 'selected' : ''}>${u.label}</option>`).join('');
+
+            document.getElementById('lab-scale-factor-text').textContent = `Factor por escalón: ${mag.factor}`;
+        }
+
+        function recalcLab() {
+            const mag = scalesData[currentLabMagnitude];
+            const valInput = parseFloat(document.getElementById('lab-input-value').value);
+            const fromKey = document.getElementById('lab-select-from').value;
+            const toKey = document.getElementById('lab-select-to').value;
+
+            if (isNaN(valInput)) {
+                document.getElementById('lab-result-display').textContent = "--";
+                return;
+            }
+
+            const fromUnit = mag.units.find(u => u.key === fromKey);
+            const toUnit = mag.units.find(u => u.key === toKey);
+
+            if (!fromUnit || !toUnit) return;
+
+            const fromIdx = mag.units.findIndex(u => u.key === fromKey);
+            const toIdx = mag.units.findIndex(u => u.key === toKey);
+            const stepsDiff = toIdx - fromIdx; // >0: bajando; <0: subiendo
+
+            // Renderizado de nodos de la escalera
+            const stairsContainer = document.getElementById('lab-stairs-container');
+            const minIdx = Math.min(fromIdx, toIdx);
+            const maxIdx = Math.max(fromIdx, toIdx);
+
+            stairsContainer.innerHTML = mag.units.map((u, idx) => {
+                let stateClass = "border-gray-200 bg-white text-gray-700";
+                if (idx === fromIdx) {
+                    stateClass = "active-from border-accent";
+                } else if (idx === toIdx) {
+                    stateClass = "active-to border-blue-600";
+                } else if (idx > minIdx && idx < maxIdx) {
+                    stateClass = "active-between";
+                }
+                return `<div class="step-node px-3 py-1.5 rounded-lg border text-xs font-mono font-bold ${stateClass}">${u.key}</div>`;
+            }).join('');
+
+            // Cálculos
+            const numSteps = Math.abs(stepsDiff);
+            let resultVal = valInput;
+            let opString = "";
+            let commaString = "";
+
+            if (stepsDiff === 0) {
+                opString = "Misma unidad (sin cambio)";
+                commaString = "0 lugares desplazados";
+                document.getElementById('lab-direction-indicator').innerHTML = `Misma unidad seleccionada (valor idéntico)`;
+            } else if (stepsDiff > 0) {
+                // Bajando
+                const factorTotal = Math.pow(mag.factor, numSteps);
+                resultVal = valInput * factorTotal;
+                opString = `Multiplicar por ${factorTotal.toLocaleString('es-AR')}`;
+                commaString = `Correr la coma ${currentLabMagnitude === 'volumen' ? numSteps * 3 : numSteps} lugares &rarr; (derecha)`;
+                document.getElementById('lab-direction-indicator').innerHTML = `<i class="fa-solid fa-arrow-down text-accent mr-1"></i> Descenso de <strong>${numSteps}</strong> escalón(es): se multiplica por <strong>${mag.factor}</strong> en cada paso.`;
+            } else {
+                // Subiendo
+                const factorTotal = Math.pow(mag.factor, numSteps);
+                resultVal = valInput / factorTotal;
+                opString = `Dividir por ${factorTotal.toLocaleString('es-AR')}`;
+                commaString = `Correr la coma ${currentLabMagnitude === 'volumen' ? numSteps * 3 : numSteps} lugares &larr; (izquierda)`;
+                document.getElementById('lab-direction-indicator').innerHTML = `<i class="fa-solid fa-arrow-up text-blue-600 mr-1"></i> Ascenso de <strong>${numSteps}</strong> escalón(es): se divide por <strong>${mag.factor}</strong> en cada paso.`;
+            }
+
+            // Formatear resultado
+            let formattedRes = resultVal;
+            if (Math.abs(resultVal) < 0.000001 && resultVal !== 0) {
+                formattedRes = resultVal.toExponential(4);
+            } else {
+                formattedRes = Number(resultVal.toFixed(6)).toString();
+            }
+
+            document.getElementById('lab-op-display').innerHTML = opString;
+            document.getElementById('lab-comma-display').innerHTML = commaString;
+            document.getElementById('lab-result-display').textContent = `${formattedRes} ${toUnit.key}`;
+            document.getElementById('lab-result-unit').textContent = `Equivale exactamente a ${valInput} ${fromUnit.key}`;
+        }
+
+        // CASOS CLÍNICOS FORMATIVOS
+        function selectClinicalCase(idx) {
+            selectedCaseIdx = idx;
+            for (let i = 0; i < 3; i++) {
+                const b = document.getElementById(`case-btn-${i}`);
+                if (!b) continue;
+                if (i === idx) {
+                    b.className = "p-3 text-left rounded-xl border-2 border-accent bg-accent-light text-xs font-bold text-gray-900 transition";
+                } else {
+                    b.className = "p-3 text-left rounded-xl border border-gray-200 bg-white hover:border-gray-300 text-xs font-bold text-gray-900 transition";
+                }
+            }
+            renderClinicalCase();
+        }
+
+        function renderClinicalCase() {
+            const c = clinicalCasesData[selectedCaseIdx];
+            const box = document.getElementById('clinical-case-container');
+
+            box.innerHTML = `
+                <div class="border-b border-gray-100 pb-3">
+                    <span class="text-[10px] font-mono text-accent font-bold uppercase tracking-wider">Caso Clínico ${selectedCaseIdx + 1} de 3</span>
+                    <h3 class="text-sm font-bold text-gray-900 mt-0.5">${c.title}</h3>
+                    <p class="text-xs text-gray-600 mt-1.5 leading-relaxed">${c.context}</p>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-gray-800 mb-2.5">${c.question}</h4>
+                    <div class="space-y-2">
+                        ${c.options.map((opt, i) => `
+                            <button onclick="checkClinicalAnswer(${i})" class="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-accent hover:bg-gray-50 text-xs text-gray-800 transition flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-700 flex-shrink-0 flex items-center justify-center font-bold text-[10px] mt-0.5">${String.fromCharCode(65 + i)}</span>
+                                <span class="leading-relaxed">${opt.text}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div id="case-feedback-box" class="hidden p-3.5 rounded-lg text-xs leading-relaxed"></div>
+            `;
+        }
+
+        function checkClinicalAnswer(optionIdx) {
+            const c = clinicalCasesData[selectedCaseIdx];
+            const opt = c.options[optionIdx];
+            const fbBox = document.getElementById('case-feedback-box');
+
+            fbBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-amber-50', 'border-amber-200', 'text-amber-900');
+
+            if (opt.correct) {
+                fbBox.className = "p-3.5 rounded-lg text-xs leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-900";
+                fbBox.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold mb-1">
+                        <i class="fa-solid fa-circle-check text-accent text-sm"></i>
+                        <span>Respuesta Correcta</span>
+                    </div>
+                    <p>${opt.feedback}</p>
+                `;
+                showToast("¡Respuesta Correcta!");
+            } else {
+                fbBox.className = "p-3.5 rounded-lg text-xs leading-relaxed bg-amber-50 border border-amber-200 text-amber-900";
+                fbBox.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold mb-1">
+                        <i class="fa-solid fa-circle-exclamation text-amber-700 text-sm"></i>
+                        <span>Análisis de la Respuesta</span>
+                    </div>
+                    <p>${opt.feedback}</p>
+                `;
+            }
+        }
+
+        // MODALES
+        function openModal(id) {
+            const m = document.getElementById(id);
+            if (m) {
+                m.classList.remove('hidden');
+                renderMath();
+            }
+        }
+
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.add('hidden');
+        }
+
+        // RENDERIZADO KATEX
+        function renderMath() {
+            if (typeof renderMathInElement === 'function') {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                } catch (e) {
+                    console.warn('KaTeX render warning:', e);
+                }
+            }
+        }
+
+        // TOAST
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toast-msg');
+            m.textContent = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                t.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => {
+            initLabSelectors();
+            recalcLab();
+            selectClinicalCase(0);
+            renderMath();
+        });
+    </script>
+</body>
+</html>
